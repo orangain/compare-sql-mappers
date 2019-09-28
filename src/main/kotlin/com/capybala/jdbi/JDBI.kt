@@ -47,6 +47,7 @@ fun testJDBI(jdbcUrl: String) {
         doTest(c, "c_inet_ipv6", InetAddress.getByName("::1"))
         doTest(c, "c_integer_array", listOf(1, 2, 3), object : GenericType<List<Int>>() {})
         doTest(c, "c_integer_array", arrayOf(1, 2, 3))
+        doTest(c, "c_integer_array", intArrayOf(1, 2, 3))
         doTest(c, "c_varchar_array", listOf("A", "B", "C"), object : GenericType<List<String>>() {})
         doTest(c, "c_varchar_array", arrayOf("A", "B", "C"))
         doTest(c, "c_url", URL("http://example.com/"))

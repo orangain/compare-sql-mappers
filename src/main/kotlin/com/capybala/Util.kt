@@ -42,6 +42,9 @@ fun <T> isEqual(a: T, b: T): Boolean {
     if (a is ByteArray && b is ByteArray) {
         return a.toList() == b.toList()
     }
+    if (a is IntArray && b is IntArray) {
+        return a.toList() == b.toList()
+    }
     if (a is Array<*> && b is Array<*>) {
         return a.toList() == b.toList()
     }
