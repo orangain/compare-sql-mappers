@@ -1,6 +1,7 @@
 package com.capybala
 
 import com.capybala.dbutils.testDbUtils
+import com.capybala.jdbctemplate.testJdbcTemplate
 import com.capybala.jdbi.testJDBI
 import com.capybala.sql2o.testSql2o
 import org.jdbi.v3.core.Jdbi
@@ -10,9 +11,10 @@ fun main(args: Array<String>) {
     val jdbcUrl = "jdbc:postgresql://localhost:5432/postgres?user=postgres&password="
 
     val tests = listOf(
-            Test("jdbi", ::testJDBI),
-            Test("sql2o", ::testSql2o),
-            Test("dbutils", ::testDbUtils)
+            Test("JDBI", ::testJDBI),
+            Test("Sql2o", ::testSql2o),
+            Test("Commons DbUtils", ::testDbUtils),
+            Test("Spring JDBC Template", ::testJdbcTemplate)
     )
 
     setup(jdbcUrl)
