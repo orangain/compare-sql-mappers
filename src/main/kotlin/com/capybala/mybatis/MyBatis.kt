@@ -82,8 +82,22 @@ fun <T> canBind(c: SqlSession, column: String, value: T): TestResult {
 }
 
 fun <T> canMap(c: SqlSession, column: String, expectedValue: T): TestResult {
-    val result: T = c.getMapper(TestMapper::class.java).selectValue(column)
-    return if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
+    val mapper = c.getMapper(TestMapper::class.java)
+    return try {
+        val result: T = when (expectedValue) {
+            is BigDecimal -> mapper.selectValueBigDecimal(column)
+            is LocalDate -> mapper.selectValueLocalDate(column)
+            is LocalTime -> mapper.selectValueLocalTime(column)
+            is OffsetTime -> mapper.selectValueOffsetTime(column)
+            is LocalDateTime -> mapper.selectValueLocalDateTime(column)
+            is OffsetDateTime -> mapper.selectValueOffsetDateTime(column)
+            else -> mapper.selectValue(column)
+        } as T
+
+        if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
+    }
 }
 
 interface TestMapper {
@@ -92,4 +106,22 @@ interface TestMapper {
 
     @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
     fun <T> selectValue(@Param("column") column: String): T
+
+    @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
+    fun selectValueBigDecimal(@Param("column") column: String): BigDecimal
+
+    @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
+    fun selectValueLocalDate(@Param("column") column: String): LocalDate
+
+    @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
+    fun selectValueLocalTime(@Param("column") column: String): LocalTime
+
+    @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
+    fun selectValueOffsetTime(@Param("column") column: String): OffsetTime
+
+    @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
+    fun selectValueLocalDateTime(@Param("column") column: String): LocalDateTime
+
+    @Select("SELECT ${'$'}{column} FROM sql_mapper_test")
+    fun selectValueOffsetDateTime(@Param("column") column: String): OffsetDateTime
 }
