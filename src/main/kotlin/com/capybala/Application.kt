@@ -1,5 +1,6 @@
 package com.capybala
 
+import com.capybala.dbutils.testDbUtils
 import com.capybala.jdbi.testJDBI
 import com.capybala.sql2o.testSql2o
 import org.jdbi.v3.core.Jdbi
@@ -10,7 +11,8 @@ fun main(args: Array<String>) {
 
     val tests = listOf(
             Test("jdbi", ::testJDBI),
-            Test("sql2o", ::testSql2o)
+            Test("sql2o", ::testSql2o),
+            Test("dbutils", ::testDbUtils)
     )
 
     setup(jdbcUrl)
