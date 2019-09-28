@@ -12,11 +12,11 @@ fun main(args: Array<String>) {
     val jdbcUrl = "jdbc:postgresql://localhost:5432/postgres?user=postgres&password="
 
     val tests = listOf(
-            Test("JDBI", ::testJDBI),
-            Test("Sql2o", ::testSql2o),
             Test("Commons DbUtils", ::testDbUtils),
+            Test("MyBatis", ::testMyBatis),
             Test("Spring JDBC Template", ::testJdbcTemplate),
-            Test("MyBatis", ::testMyBatis)
+            Test("JDBI", ::testJDBI),
+            Test("Sql2o", ::testSql2o)
     )
 
     setup(jdbcUrl)
