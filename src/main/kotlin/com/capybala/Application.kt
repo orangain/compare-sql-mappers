@@ -18,7 +18,10 @@ fun main(args: Array<String>) {
     setup(jdbcUrl)
     tests.forEach { (name, testFunc) ->
         println("============================== $name ==============================")
+        val start = System.currentTimeMillis()
         testFunc(jdbcUrl)
+        val end = System.currentTimeMillis()
+        println("${end - start}ms")
     }
 }
 

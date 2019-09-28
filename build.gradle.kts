@@ -15,6 +15,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
 //    implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.postgresql:postgresql:42.2.8")
+    implementation("com.zaxxer:HikariCP:3.4.1")
     // sql2o
     implementation("org.sql2o:sql2o:1.6.0")
     implementation("org.sql2o.extensions:sql2o-postgres:1.6.0")

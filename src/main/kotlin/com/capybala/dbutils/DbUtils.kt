@@ -3,9 +3,9 @@ package com.capybala.dbutils
 import com.capybala.JST_OFFSET
 import com.capybala.TestResult
 import com.capybala.isEqual
+import com.zaxxer.hikari.HikariDataSource
 import org.apache.commons.dbutils.QueryRunner
 import org.apache.commons.dbutils.handlers.ScalarHandler
-import org.postgresql.ds.PGSimpleDataSource
 import java.math.BigDecimal
 import java.net.InetAddress
 import java.net.URL
@@ -17,9 +17,8 @@ import java.util.*
 
 
 fun testDbUtils(jdbcUrl: String) {
-    val dataSource = PGSimpleDataSource()
-    dataSource.setURL(jdbcUrl)
-
+    val dataSource = HikariDataSource()
+    dataSource.jdbcUrl = jdbcUrl
 
     val localDate = LocalDate.of(2019, 9, 27)
     val localTime = LocalTime.of(13, 23)
