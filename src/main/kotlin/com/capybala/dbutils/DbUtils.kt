@@ -53,6 +53,11 @@ fun testDbUtils(jdbcUrl: String) {
     doTest(c, "c_integer_array", intArrayOf(1, 2, 3))
     doTest(c, "c_varchar_array", listOf("A", "B", "C"))
     doTest(c, "c_varchar_array", arrayOf("A", "B", "C"))
+    doTestIn(c, "c_integer", listOf(1, 2, 3))
+    doTestIn(c, "c_integer", arrayOf(1, 2, 3))
+    doTestIn(c, "c_integer", intArrayOf(1, 2, 3))
+    doTestIn(c, "c_varchar", listOf("integer", "varchar", "text"))
+    doTestIn(c, "c_varchar", arrayOf("integer", "varchar", "text"))
 }
 
 inline fun <reified T> doTest(c: QueryRunner, column: String, value: T) {
@@ -76,4 +81,21 @@ fun <T> canMap(c: QueryRunner, column: String, expectedValue: T): TestResult {
     val handler = ScalarHandler<T>()
     val result: T = c.query("SELECT $column FROM sql_mapper_test", handler)
     return if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
+}
+
+inline fun <reified T> doTestIn(c: QueryRunner, column: String, value: T) {
+    val b = canBindIn(c, column, value)
+    println("$column.in\t${T::class.java.canonicalName}\t${b.asColoredString()}")
+}
+
+
+fun <T> canBindIn(c: QueryRunner, column: String, value: T): TestResult {
+    return try {
+        val handler = ScalarHandler<Long>()
+        val count = c.query("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = IN(?)", handler, value)
+
+        if (count.toInt() == 1) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
+    }
 }
