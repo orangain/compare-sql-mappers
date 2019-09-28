@@ -2,7 +2,6 @@ package com.capybala.dbutils
 
 import com.capybala.JST_OFFSET
 import com.capybala.TestResult
-import com.capybala.coloredResult
 import com.capybala.isEqual
 import org.apache.commons.dbutils.QueryRunner
 import org.apache.commons.dbutils.handlers.ScalarHandler
@@ -11,7 +10,6 @@ import java.math.BigDecimal
 import java.net.InetAddress
 import java.net.URL
 import java.sql.Date
-import java.sql.SQLException
 import java.sql.Time
 import java.sql.Timestamp
 import java.time.*
@@ -60,7 +58,7 @@ fun testDbUtils(jdbcUrl: String) {
 inline fun <reified T> doTest(c: QueryRunner, column: String, value: T) {
     val b = canBind(c, column, value)
     val m = canMap(c, column, value)
-    println("$column\t${T::class.java.canonicalName}\t${coloredResult(b)}\t${coloredResult(m)}")
+    println("$column\t${T::class.java.canonicalName}\t${b.asColoredString()}\t${m.asColoredString()}")
 }
 
 fun <T> canBind(c: QueryRunner, column: String, value: T): TestResult {
@@ -68,14 +66,14 @@ fun <T> canBind(c: QueryRunner, column: String, value: T): TestResult {
         val handler = ScalarHandler<Long>()
         val count = c.query("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = ?", handler, value)
 
-        if (count.toInt() == 1) TestResult.SUCCESS else TestResult.WRONG_VALUE
-    } catch (ex: SQLException) {
-        TestResult.EXCEPTION
+        if (count.toInt() == 1) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
     }
 }
 
 fun <T> canMap(c: QueryRunner, column: String, expectedValue: T): TestResult {
     val handler = ScalarHandler<T>()
     val result: T = c.query("SELECT $column FROM sql_mapper_test", handler)
-    return if (isEqual(result, expectedValue)) TestResult.SUCCESS else TestResult.WRONG_VALUE
+    return if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
 }

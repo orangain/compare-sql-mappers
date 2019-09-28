@@ -4,31 +4,35 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 
+val JST_OFFSET = ZoneOffset.of("+09:00")!!
+
 const val ANSI_RESET = "\u001B[0m"
 const val ANSI_RED = "\u001B[31m"
 const val ANSI_GREEN = "\u001B[32m"
 const val ANSI_YELLOW = "\u001B[33m"
 
-fun coloredBool(value: Boolean): String {
-    return if (value) {
-        "$ANSI_GREEN$value$ANSI_RESET"
-    } else {
-        "$ANSI_RED$value$ANSI_RESET"
+data class TestResult(val type: TestResultType, val ex: Exception? = null) {
+    companion object {
+        fun success() = TestResult(TestResultType.SUCCESS)
+        fun wrongValue() = TestResult(TestResultType.WRONG_VALUE)
+        fun exception(ex: Exception) = TestResult(TestResultType.EXCEPTION, ex)
+    }
+
+    fun asString() = when (type) {
+        TestResultType.SUCCESS -> "Success"
+        TestResultType.WRONG_VALUE -> "Wrong Value"
+        TestResultType.EXCEPTION -> ex!!.javaClass.simpleName
+    }
+
+    fun asColoredString() = when (type) {
+        TestResultType.SUCCESS -> "${ANSI_GREEN}${asString()}$ANSI_RESET"
+        TestResultType.WRONG_VALUE -> "${ANSI_YELLOW}${asString()}$ANSI_RESET"
+        TestResultType.EXCEPTION -> "${ANSI_RED}${asString()}$ANSI_RESET"
     }
 }
 
-val JST_OFFSET = ZoneOffset.of("+09:00")!!
-
-enum class TestResult {
+enum class TestResultType {
     SUCCESS, WRONG_VALUE, EXCEPTION
-}
-
-fun coloredResult(value: TestResult): String {
-    return when (value) {
-        TestResult.SUCCESS -> "${ANSI_GREEN}Success$ANSI_RESET"
-        TestResult.WRONG_VALUE -> "${ANSI_YELLOW}Wrong Value$ANSI_RESET"
-        TestResult.EXCEPTION -> "${ANSI_RED}Exception$ANSI_RESET"
-    }
 }
 
 fun <T> isEqual(a: T, b: T): Boolean {

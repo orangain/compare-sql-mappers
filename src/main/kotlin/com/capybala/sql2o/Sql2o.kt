@@ -2,11 +2,9 @@ package com.capybala.sql2o
 
 import com.capybala.JST_OFFSET
 import com.capybala.TestResult
-import com.capybala.coloredResult
 import com.capybala.isEqual
 import org.sql2o.Connection
 import org.sql2o.Sql2o
-import org.sql2o.Sql2oException
 import org.sql2o.quirks.PostgresQuirks
 import java.math.BigDecimal
 import java.net.InetAddress
@@ -59,7 +57,7 @@ fun testSql2o(jdbcUrl: String) {
 inline fun <reified T> doTest(c: Connection, column: String, value: T) {
     val b = canBind(c, column, value)
     val m = canMap(c, column, T::class.java, value)
-    println("$column\t${T::class.java.canonicalName}\t${coloredResult(b)}\t${coloredResult(m)}")
+    println("$column\t${T::class.java.canonicalName}\t${b.asColoredString()}\t${m.asColoredString()}")
 }
 
 fun <T> canBind(c: Connection, column: String, value: T): TestResult {
@@ -67,9 +65,9 @@ fun <T> canBind(c: Connection, column: String, value: T): TestResult {
         val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = :value")
                 .addParameter("value", value)
                 .executeScalar(Integer::class.java)
-        if (count.toInt() == 1) TestResult.SUCCESS else TestResult.WRONG_VALUE
-    } catch (ex: RuntimeException) {
-        TestResult.EXCEPTION
+        if (count.toInt() == 1) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
     }
 }
 
@@ -77,8 +75,8 @@ fun <T> canMap(c: Connection, column: String, klass: Class<T>, expectedValue: T)
     return try {
         val result: T = c.createQuery("SELECT $column FROM sql_mapper_test")
                 .executeScalar(klass)
-        if (isEqual(result, expectedValue)) TestResult.SUCCESS else TestResult.WRONG_VALUE
-    } catch (ex: Sql2oException) {
-        TestResult.EXCEPTION
+        if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
     }
 }

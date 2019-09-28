@@ -2,14 +2,10 @@ package com.capybala.jdbi
 
 import com.capybala.JST_OFFSET
 import com.capybala.TestResult
-import com.capybala.coloredResult
 import com.capybala.isEqual
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.generic.GenericType
-import org.jdbi.v3.core.mapper.NoSuchMapperException
-import org.jdbi.v3.core.result.ResultSetException
-import org.jdbi.v3.core.statement.UnableToCreateStatementException
 import java.math.BigDecimal
 import java.net.InetAddress
 import java.net.URL
@@ -61,7 +57,7 @@ fun testJDBI(jdbcUrl: String) {
 inline fun <reified T> doTest(c: Handle, column: String, value: T, genericType: GenericType<T>? = null) {
     val b = canBind(c, column, value, genericType)
     val m = canMap(c, column, T::class.java, genericType, value)
-    println("$column\t${T::class.java.canonicalName}\t${coloredResult(b)}\t${coloredResult(m)}")
+    println("$column\t${T::class.java.canonicalName}\t${b.asColoredString()}\t${m.asColoredString()}")
 }
 
 fun <T> canBind(c: Handle, column: String, value: T, genericType: GenericType<T>?): TestResult {
@@ -77,11 +73,9 @@ fun <T> canBind(c: Handle, column: String, value: T, genericType: GenericType<T>
                     .mapTo(Integer::class.java)
                     .first()
 
-        if (count.toInt() == 1) TestResult.SUCCESS else TestResult.WRONG_VALUE
-    } catch (ex: UnsupportedOperationException) {
-        TestResult.EXCEPTION
-    } catch (ex: UnableToCreateStatementException) {
-        TestResult.EXCEPTION
+        if (count.toInt() == 1) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
     }
 }
 
@@ -96,10 +90,8 @@ fun <T> canMap(c: Handle, column: String, klass: Class<T>, genericType: GenericT
                     .mapTo(genericType)
                     .first()
 
-        if (isEqual(result, expectedValue)) TestResult.SUCCESS else TestResult.WRONG_VALUE
-    } catch (ex: NoSuchMapperException) {
-        TestResult.EXCEPTION
-    } catch (ex: ResultSetException) {
-        TestResult.EXCEPTION
+        if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
     }
 }
