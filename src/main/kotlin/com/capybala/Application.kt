@@ -13,8 +13,8 @@ fun main(args: Array<String>) {
 
     val tests = listOf(
             Test("Commons DbUtils", ::testDbUtils),
-            Test("MyBatis", ::testMyBatis),
             Test("Spring JDBC Template", ::testJdbcTemplate),
+            Test("MyBatis", ::testMyBatis),
             Test("JDBI", ::testJDBI),
             Test("Sql2o", ::testSql2o)
     )
