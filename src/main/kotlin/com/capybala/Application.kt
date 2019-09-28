@@ -3,6 +3,7 @@ package com.capybala
 import com.capybala.dbutils.testDbUtils
 import com.capybala.jdbctemplate.testJdbcTemplate
 import com.capybala.jdbi.testJDBI
+import com.capybala.mybatis.testMyBatis
 import com.capybala.sql2o.testSql2o
 import org.jdbi.v3.core.Jdbi
 
@@ -14,7 +15,8 @@ fun main(args: Array<String>) {
             Test("JDBI", ::testJDBI),
             Test("Sql2o", ::testSql2o),
             Test("Commons DbUtils", ::testDbUtils),
-            Test("Spring JDBC Template", ::testJdbcTemplate)
+            Test("Spring JDBC Template", ::testJdbcTemplate),
+            Test("MyBatis", ::testMyBatis)
     )
 
     setup(jdbcUrl)

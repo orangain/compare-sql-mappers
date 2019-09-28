@@ -28,6 +28,8 @@ dependencies {
     implementation("commons-dbutils:commons-dbutils:1.7")
     // Spring JDBC Template
     implementation("org.springframework:spring-jdbc:5.1.9.RELEASE")
+    // MyBatis
+    implementation("org.mybatis:mybatis:3.5.2")
 }
 
 tasks.compileKotlin {
