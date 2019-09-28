@@ -24,10 +24,16 @@ data class TestResult(val type: TestResultType, val ex: Exception? = null) {
         TestResultType.EXCEPTION -> ex!!.javaClass.simpleName
     }
 
-    fun asColoredString() = when (type) {
-        TestResultType.SUCCESS -> "${ANSI_GREEN}${asString()}$ANSI_RESET"
-        TestResultType.WRONG_VALUE -> "${ANSI_YELLOW}${asString()}$ANSI_RESET"
-        TestResultType.EXCEPTION -> "${ANSI_RED}${asString()}$ANSI_RESET"
+    fun asColoredString(): String {
+        if (!System.getenv("NOCOLOR").isNullOrEmpty()) {
+            return asString()
+        }
+
+        return when (type) {
+            TestResultType.SUCCESS -> "${ANSI_GREEN}${asString()}$ANSI_RESET"
+            TestResultType.WRONG_VALUE -> "${ANSI_YELLOW}${asString()}$ANSI_RESET"
+            TestResultType.EXCEPTION -> "${ANSI_RED}${asString()}$ANSI_RESET"
+        }
     }
 }
 
