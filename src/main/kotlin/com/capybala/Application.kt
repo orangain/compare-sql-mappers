@@ -48,6 +48,8 @@ fun setup(jdbcUrl: String) {
                 c_double double precision,
                 c_varchar varchar(100),
                 c_text text,
+                c_binary bytea,
+                c_uuid uuid,
                 -- datetime
                 c_date date,
                 c_time time,
@@ -55,13 +57,11 @@ fun setup(jdbcUrl: String) {
                 c_timestamp timestamp,
                 c_timestamp_with_time_zone timestamp with time zone,
                 -- complex
-                c_binary bytea,
                 c_inet_ipv4 inet,
                 c_inet_ipv6 inet,
-                c_integer_array integer[],
-                c_varchar_array varchar(10)[],
                 c_url text,
-                c_uuid uuid
+                c_integer_array integer[],
+                c_varchar_array varchar(10)[]
             );
             insert into sql_mapper_test (
                 -- simple
@@ -71,6 +71,8 @@ fun setup(jdbcUrl: String) {
                 c_double,
                 c_varchar,
                 c_text,
+                c_binary,
+                c_uuid,
                 -- datetime
                 c_date,
                 c_time,
@@ -78,13 +80,11 @@ fun setup(jdbcUrl: String) {
                 c_timestamp,
                 c_timestamp_with_time_zone,
                 -- complex
-                c_binary,
                 c_inet_ipv4,
                 c_inet_ipv6,
-                c_integer_array,
-                c_varchar_array,
                 c_url,
-                c_uuid
+                c_integer_array,
+                c_varchar_array
             ) values (
                 -- simple
                 true,
@@ -93,6 +93,8 @@ fun setup(jdbcUrl: String) {
                 0.5,
                 'varchar',
                 'long long text',
+                E'\\xDEADBEEF',
+                '33ee757a-19b3-45dc-be79-f1d65ac5d1a4',
                 -- datetime
                 '2019-09-27',
                 '13:23',
@@ -100,13 +102,11 @@ fun setup(jdbcUrl: String) {
                 '2019-09-27T13:23',
                 '2019-09-27T13:23+09:00',
                 -- complex
-                E'\\xDEADBEEF',
                 inet '192.168.1.1',
                 inet '::1',
-                array[1, 2, 3],
-                array['A', 'B', 'C'],
                 'https://example.com',
-                '33ee757a-19b3-45dc-be79-f1d65ac5d1a4'
+                array[1, 2, 3],
+                array['A', 'B', 'C']
             )
         """.trimIndent()).execute()
     }

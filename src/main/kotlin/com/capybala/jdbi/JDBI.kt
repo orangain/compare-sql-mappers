@@ -34,6 +34,8 @@ fun testJDBI(jdbcUrl: String) {
         doTest(c, "c_double", BigDecimal("0.5"))
         doTest(c, "c_varchar", "varchar")
         doTest(c, "c_text", "long long text")
+        doTest(c, "c_binary", byteArrayOf(0xDE.toByte(), 0xAD.toByte(), 0xBE.toByte(), 0xEF.toByte()))
+        doTest(c, "c_uuid", UUID.fromString("33ee757a-19b3-45dc-be79-f1d65ac5d1a4"))
         doTest(c, "c_date", localDate)
         doTest(c, "c_date", Date.valueOf(localDate))
         doTest(c, "c_time", localTime)
@@ -42,16 +44,14 @@ fun testJDBI(jdbcUrl: String) {
         doTest(c, "c_timestamp", localDateTime)
         doTest(c, "c_timestamp", Timestamp.valueOf(localDateTime))
         doTest(c, "c_timestamp_with_time_zone", offsetDateTime)
-        doTest(c, "c_binary", byteArrayOf(0xDE.toByte(), 0xAD.toByte(), 0xBE.toByte(), 0xEF.toByte()))
         doTest(c, "c_inet_ipv4", InetAddress.getByName("192.168.1.1"))
         doTest(c, "c_inet_ipv6", InetAddress.getByName("::1"))
+        doTest(c, "c_url", URL("http://example.com/"))
         doTest(c, "c_integer_array", listOf(1, 2, 3), object : GenericType<List<Int>>() {})
         doTest(c, "c_integer_array", arrayOf(1, 2, 3))
         doTest(c, "c_integer_array", intArrayOf(1, 2, 3))
         doTest(c, "c_varchar_array", listOf("A", "B", "C"), object : GenericType<List<String>>() {})
         doTest(c, "c_varchar_array", arrayOf("A", "B", "C"))
-        doTest(c, "c_url", URL("http://example.com/"))
-        doTest(c, "c_uuid", UUID.fromString("33ee757a-19b3-45dc-be79-f1d65ac5d1a4"))
     }
 }
 
