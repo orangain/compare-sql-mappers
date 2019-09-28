@@ -47,32 +47,26 @@ fun testJDBI(jdbcUrl: String) {
         doTest(c, "c_inet_ipv4", InetAddress.getByName("192.168.1.1"))
         doTest(c, "c_inet_ipv6", InetAddress.getByName("::1"))
         doTest(c, "c_url", URL("http://example.com/"))
-        doTest(c, "c_integer_array", listOf(1, 2, 3), object : GenericType<List<Int>>() {})
+        doTestGeneric(c, "c_integer_array", listOf(1, 2, 3), object : GenericType<List<Int>>() {})
         doTest(c, "c_integer_array", arrayOf(1, 2, 3))
         doTest(c, "c_integer_array", intArrayOf(1, 2, 3))
-        doTest(c, "c_varchar_array", listOf("A", "B", "C"), object : GenericType<List<String>>() {})
+        doTestGeneric(c, "c_varchar_array", listOf("A", "B", "C"), object : GenericType<List<String>>() {})
         doTest(c, "c_varchar_array", arrayOf("A", "B", "C"))
     }
 }
 
-inline fun <reified T> doTest(c: Handle, column: String, value: T, genericType: GenericType<T>? = null) {
-    val b = canBind(c, column, value, genericType)
-    val m = canMap(c, column, T::class.java, genericType, value)
+inline fun <reified T> doTest(c: Handle, column: String, value: T) {
+    val b = canBind(c, column, value)
+    val m = canMap(c, column, T::class.java, value)
     println("$column\t${T::class.java.canonicalName}\t${b.asColoredString()}\t${m.asColoredString()}")
 }
 
-fun <T> canBind(c: Handle, column: String, value: T, genericType: GenericType<T>?): TestResult {
+fun <T> canBind(c: Handle, column: String, value: T): TestResult {
     return try {
-        val count = if (genericType == null)
-            c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = :value")
-                    .bind("value", value)
-                    .mapTo(Integer::class.java)
-                    .first()
-        else
-            c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = :value")
-                    .bindByType("value", value, genericType) // Use bindByType for generic types
-                    .mapTo(Integer::class.java)
-                    .first()
+        val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = :value")
+                .bind("value", value)
+                .mapTo(Integer::class.java)
+                .first()
 
         if (count.toInt() == 1) TestResult.success() else TestResult.wrongValue()
     } catch (ex: Exception) {
@@ -80,16 +74,42 @@ fun <T> canBind(c: Handle, column: String, value: T, genericType: GenericType<T>
     }
 }
 
-fun <T> canMap(c: Handle, column: String, klass: Class<T>, genericType: GenericType<T>?, expectedValue: T): TestResult {
+fun <T> canMap(c: Handle, column: String, klass: Class<T>, expectedValue: T): TestResult {
     return try {
-        val result: T = if (genericType == null)
-            c.createQuery("SELECT $column FROM sql_mapper_test")
-                    .mapTo(klass)
-                    .first()
-        else
-            c.createQuery("SELECT $column FROM sql_mapper_test")
-                    .mapTo(genericType)
-                    .first()
+        val result: T = c.createQuery("SELECT $column FROM sql_mapper_test")
+                .mapTo(klass)
+                .first()
+
+        if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
+    }
+}
+
+inline fun <reified T> doTestGeneric(c: Handle, column: String, value: T, genericType: GenericType<T>) {
+    val b = canBindGeneric(c, column, value, genericType)
+    val m = canMapGeneric(c, column, genericType, value)
+    println("$column\t${T::class.java.canonicalName}\t${b.asColoredString()}\t${m.asColoredString()}")
+}
+
+fun <T> canBindGeneric(c: Handle, column: String, value: T, genericType: GenericType<T>): TestResult {
+    return try {
+        val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column = :value")
+                .bindByType("value", value, genericType) // Use bindByType for generic types
+                .mapTo(Integer::class.java)
+                .first()
+
+        if (count.toInt() == 1) TestResult.success() else TestResult.wrongValue()
+    } catch (ex: Exception) {
+        TestResult.exception(ex)
+    }
+}
+
+fun <T> canMapGeneric(c: Handle, column: String, genericType: GenericType<T>, expectedValue: T): TestResult {
+    return try {
+        val result: T = c.createQuery("SELECT $column FROM sql_mapper_test")
+                .mapTo(genericType)
+                .first()
 
         if (isEqual(result, expectedValue)) TestResult.success() else TestResult.wrongValue()
     } catch (ex: Exception) {
