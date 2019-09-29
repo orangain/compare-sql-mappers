@@ -53,9 +53,9 @@ fun setup(jdbcUrl: String) {
                 -- datetime
                 c_date date,
                 c_time time,
-                c_timetz time with time zone,
+                c_timetz timetz,
                 c_timestamp timestamp,
-                c_timestamptz timestamp with time zone,
+                c_timestamptz timestamptz,
                 -- complex
                 c_inet_ipv4 inet,
                 c_inet_ipv6 inet,
