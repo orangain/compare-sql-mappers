@@ -52,10 +52,10 @@ fun testJDBI(jdbcUrl: String) {
         doTest(c, "c_integer_array", intArrayOf(1, 2, 3))
         doTestGeneric(c, "c_varchar_array", listOf("A", "B", "C"), object : GenericType<List<String>>() {})
         doTest(c, "c_varchar_array", arrayOf("A", "B", "C"))
-        doTestInGeneric(c, "c_integer", listOf(1, 2, 3), object : GenericType<List<Int>>() {})
+        doTestInIterable(c, "c_integer", listOf(1, 2, 3))
         doTestIn(c, "c_integer", arrayOf(1, 2, 3))
         doTestIn(c, "c_integer", intArrayOf(1, 2, 3))
-        doTestInGeneric(c, "c_varchar", listOf("integer", "varchar", "text"), object : GenericType<List<String>>() {})
+        doTestInIterable(c, "c_varchar", listOf("integer", "varchar", "text"))
         doTestIn(c, "c_varchar", arrayOf("integer", "varchar", "text"))
     }
 }
@@ -129,8 +129,8 @@ inline fun <reified T> doTestIn(c: Handle, column: String, value: T) {
 
 fun <T> canBindIn(c: Handle, column: String, value: T): TestResult {
     return try {
-        val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column IN (:value)")
-                .bind("value", value)
+        val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column IN (<value>)")
+                .bindList("value", value)
                 .mapTo(Integer::class.java)
                 .first()
 
@@ -140,15 +140,15 @@ fun <T> canBindIn(c: Handle, column: String, value: T): TestResult {
     }
 }
 
-inline fun <reified T> doTestInGeneric(c: Handle, column: String, value: T, genericType: GenericType<T>) {
-    val b = canBindInGeneric(c, column, value, genericType)
+inline fun <reified T : Iterable<Any>> doTestInIterable(c: Handle, column: String, value: T) {
+    val b = canBindInIterable(c, column, value)
     println("$column.in\t${T::class.java.canonicalName}\t${b.asColoredString()}")
 }
 
-fun <T> canBindInGeneric(c: Handle, column: String, value: T, genericType: GenericType<T>): TestResult {
+fun <T : Iterable<Any>> canBindInIterable(c: Handle, column: String, value: T): TestResult {
     return try {
-        val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column IN (:value)")
-                .bindByType("value", value, genericType)
+        val count = c.createQuery("SELECT COUNT(*) FROM sql_mapper_test WHERE $column IN (<value>)")
+                .bindList("value", value)
                 .mapTo(Integer::class.java)
                 .first()
 
