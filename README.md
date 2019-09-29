@@ -8,7 +8,7 @@ SQL mappers to compare:
 - [Spring JDBC Template](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/data-access.html): 5.1.9.RELEASE
 - [MyBatis](https://mybatis.org/mybatis-3/ja/index.html): 3.5.2
 - [JDBI](http://jdbi.org/) (with jdbi3-postgres): 3.10.1
-- [Sql2o](https://www.sql2o.org/) (with sql2o-postgres): 1.6.0
+- [sql2o](https://www.sql2o.org/) (with sql2o-postgres): 1.6.0
 
 ## How to run
 
